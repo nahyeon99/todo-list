@@ -1,34 +1,35 @@
 package assignment.todolist.repository;
 
 import assignment.todolist.domain.Member;
+import org.springframework.stereotype.Repository;
 
-import java.util.HashMap;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.List;
-import java.util.Map;
 
-// 회원 저장소 인터페이스
+@Repository
 public class MemberRepository {
 
-    private static Map<Long, Member> store = new HashMap<>();
+    @PersistenceContext
+    private EntityManager em;
 
     // 회원 저장
-    void save(Member member) {
-        store.put(member.getId(), member);
+    public void save(Member member) {
+        em.persist(member);
     }
 
     // 회원 조회
-    Member findMember(Long id) {
-        Member member = store.get(id);
-        return member;
+    public Member findMember(Long id) {
+        return em.find(Member.class, id);
     }
 
     // 전체 회원 조회
-//    List<Member> findAllMember() {
-//
-//    }
+    public List<Member> findMembers() {
+        return em.createQuery("select m from Member m", Member.class).getResultList();
+    }
 
     // 회원 이메일 중복체크를 위한 이메일 조회
-//    List<Member> findEmail(String email) {
-//
-//    }
+    public List<Member> findEmail(String email) {
+        return em.createQuery("select m from Member m where m.email = :email", Member.class).setParameter("email", email).getResultList();
+    }
 }

@@ -1,52 +1,40 @@
 package assignment.todolist.service;
 
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import assignment.todolist.domain.ToDo;
 import assignment.todolist.repository.ToDoRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Service
+@Transactional(readOnly = true)
+@RequiredArgsConstructor
 public class ToDoService {
-
-    private final ToDoRepository todoRepository;
-
-    // 생성자로 객체 주입
-    public ToDoService(ToDoRepository todoRepository) {
-        this.todoRepository = todoRepository;
+    private final ToDoRepository toDoRepository;
+    //추가
+    @Transactional
+    public Long join(ToDo toDo){
+        toDoRepository.save(toDo);
+        return toDo.getId();
+    }
+    //수정
+    @Transactional
+    public void update(Long id,Boolean isCompleted){
+        ToDo toDo =toDoRepository.findOne(id);
+        toDo.setIsCompleted(isCompleted);
+        toDo.setUpdatedAt(LocalDateTime.now());
     }
 
-    // 추가
-    Long addTodo(ToDo todo) {
-        todoRepository.save(todo);
-        return todo.getId();
+    //삭제
+    @Transactional
+    public  void deleteToDo(Long todoId){
+        toDoRepository.deleteToDo(todoId);
     }
-
-    // 수정 (완료여부만 수정 가능)
-    void updateTodo(Long id, boolean isCompleted) {
-        ToDo todo = todoRepository.findOneTodo(id);
-        todo.setIsCompleted(true);
-        todo.setUpdatedAt(LocalDateTime.now());
-    }
-
-    // 삭제
-    void deleteTodo(Long id) {
-        todoRepository.deleteTodo(id);
-    }
-
-    // 조회
-    // todo 1건 조회
-    ToDo findOneTodo(Long id) {
-        return todoRepository.findOneTodo(id);
-    }
-
-    // 회원까지 전체 조회
-    List<ToDo> findAllTodoWithMember() {
-        return todoRepository.findAllTodo();
-    }
-
-    // todo id 조회
-    ToDo findId(Long id) {
-        return todoRepository.findTodoById(id);
-    }
-
+    //조회
+    public ToDo findOne(Long id){return toDoRepository.findOne(id);}
+    public List<ToDo> findAllWIthMemberToDo() {return toDoRepository.findAllWIthMemberToDo();}
+    public ToDo findId(Long id){return toDoRepository.findIdWithMember(id);}
 }

@@ -1,15 +1,43 @@
 package assignment.todolist.repository;
 
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
 import assignment.todolist.domain.ToDo;
-
+import javax.persistence.EntityManager;
 import java.util.List;
 
-// ToDo List 저장소 인터페이스
-public interface ToDoRepository {
+@Repository
+@RequiredArgsConstructor
+public class ToDoRepository {
+    private final EntityManager em;
+    //저장
+    public void save(ToDo todo) {
+        em.persist(todo);
+    }
+    //단건조회
+    public ToDo findOne(Long id){return em.find(ToDo.class,id);}
 
-    void save(ToDo todo); // 저장
-    ToDo findOneTodo(Long id); // todo 단건 조회
-    List<ToDo> findAllTodo(); // todo 전체 조회
-    ToDo findTodoById(Long id); // id로 todo 조회
-    void deleteTodo(Long id); // todo 삭제
+    //조회
+    public List<ToDo> findAllWIthMemberToDo() {
+
+        return em.createQuery(
+                "select o from ToDo o" +
+                        " join fetch o.member m"
+                ,ToDo.class
+        ).getResultList();
+    }
+    public ToDo findIdWithMember(Long id){
+        return em.createQuery(
+                "select o from ToDo o" +
+                        " join fetch o.member m"+
+                        " where o.id = :id"
+                ,ToDo.class
+        ).setParameter("id",id)
+                .getSingleResult();
+    }
+    //삭제
+    public void deleteToDo(Long todoId){
+        em.remove(findOne(todoId));
+    }
+
 }

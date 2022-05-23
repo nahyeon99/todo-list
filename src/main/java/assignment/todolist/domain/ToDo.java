@@ -22,7 +22,7 @@ public class ToDo {
 
     @Column(nullable = false)
     private String content; // 내용
-    private boolean isCompleted; // 완료 여부 (or String)
+    private Boolean isCompleted; // 완료 여부 (or String)
     private LocalDateTime createdAt; // 생성날짜
     private LocalDateTime updatedAt; // 수정날짜
 
@@ -36,12 +36,12 @@ public class ToDo {
     }
 
     // 생성 메서드
-    public ToDo createToDo(Member member, String content) {
+    public static ToDo createToDo(Member member, String content) {
         ToDo todo = new ToDo();
 
         todo.setMember(member);
         todo.setContent(content);
-        todo.setCompleted(false);
+        todo.setIsCompleted(false);
         todo.setCreatedAt(LocalDateTime.now());
 
         return todo;
