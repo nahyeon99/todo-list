@@ -1,67 +1,38 @@
 package assignment.todolist.domain;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
-// ToDo entity
+@Entity
+@Table(name = "todo")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class ToDo {
+    @Id
+    @GeneratedValue
+    @Column(name = "todo_id")
     private Long id; // 식별자
+
+    @Column(nullable = false)
     private String content; // 내용
     private boolean isCompleted; // 완료 여부 (or String)
     private LocalDateTime createdAt; // 생성날짜
     private LocalDateTime updatedAt; // 수정날짜
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="member_id")
     private Member member; // 회원
 
-    // getter, setter
     public void setMember(Member member) {
         this.member = member;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-
-    public void setIsCompleted(boolean isCompleted) {
-        this.isCompleted = isCompleted;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public boolean isCompleted() {
-        return isCompleted;
-    }
-
-    public void setCompleted(boolean completed) {
-        isCompleted = completed;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
-    public Member getMember() {
-        return member;
+        member.getTodoList().add(this);
     }
 
     // 생성 메서드
@@ -70,7 +41,7 @@ public class ToDo {
 
         todo.setMember(member);
         todo.setContent(content);
-        todo.setIsCompleted(false);
+        todo.setCompleted(false);
         todo.setCreatedAt(LocalDateTime.now());
 
         return todo;
